@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Transfer Tester</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@404&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #282c34;
+            --bg-light-dark: #3a3f4a;
+            --text-light: #abb2bf;
+            --text-green: #98c379;
+            --text-red: #e06c75;
+            --text-yellow: #e5c07b;
+            --text-blue: #61afef;
+            --button-green: #28a745;
+            --button-green-hover: #218838;
+            --button-blue: #007bff;
+            --button-blue-hover: #0056b3;
+            --border-color: #5c6370;
+            --font-code: 'Fira Code', monospace;
+        }
+
+        body {
+            font-family: var(--font-code);
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .test-scenarios {
+            width: 100%;
+            max-width: 900px;
+            background-color: var(--bg-light-dark);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+        .test-scenarios h2 {
+            margin-top: 0;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+        .test-scenarios button {
+            background-color: var(--button-blue);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: var(--font-code);
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        .test-scenarios button:hover {
+            background-color: var(--button-blue-hover);
+        }
+        .test-scenarios input {
+            background-color: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 8px 10px;
+            color: var(--text-light);
+            font-family: var(--font-code);
+            width: 300px;
+            margin-right: 10px;
+        }
+        .account-info {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 10px;
+        }
+        .account-info div {
+            flex-basis: 45%;
+        }
+
+        .postman-like-container {
+            width: 100%;
+            max-width: 900px;
+            background-color: var(--bg-light-dark);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            margin-bottom: 30px;
+        }
+
+        .header-bar {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            background-color: var(--bg-dark);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .method-selector {
+            background-color: var(--bg-light-dark);
+            color: var(--text-blue);
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            margin-right: 10px;
+            font-family: var(--font-code);
+        }
+
+        .url-input {
+            flex-grow: 1;
+            background-color: var(--bg-light-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 8px 10px;
+            color: var(--text-light);
+            font-family: var(--font-code);
+            margin-right: 10px;
+        }
+
+        .send-button {
+            background-color: var(--button-green);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: var(--font-code);
+            font-weight: bold;
+        }
+
+        .send-button:hover {
+            background-color: var(--button-green-hover);
+        }
+
+        .tab-menu {
+            display: flex;
+            background-color: var(--bg-light-dark);
+            border-bottom: 1px solid var(--border-color);
+            padding-left: 15px;
+        }
+
+        .tab-menu button {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            font-family: var(--font-code);
+        }
+
+        .tab-menu button.active {
+            border-bottom-color: var(--text-blue);
+            color: var(--text-blue);
+        }
+
+        .content-area {
+            display: flex;
+        }
+
+        .request-panel, .response-panel {
+            flex: 1;
+            padding: 15px;
+            overflow: auto;
+            min-height: 250px;
+            max-height: 400px;
+        }
+
+        .request-panel {
+            border-right: 1px solid var(--border-color);
+        }
+
+        .panel-title {
+            color: var(--text-light);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .panel-title span.status {
+            margin-left: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        .panel-title span.status.success {
+            background-color: var(--text-green);
+            color: var(--bg-dark);
+        }
+        .panel-title span.status.error {
+            background-color: var(--text-red);
+            color: var(--bg-dark);
+        }
+
+        .json-editor {
+            width: 95%;
+            height: 200px;
+            background-color: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 10px;
+            color: var(--text-yellow);
+            font-family: var(--font-code);
+            resize: vertical;
+        }
+
+        .code-block {
+            background-color: var(--bg-dark);
+            border-radius: 4px;
+            padding: 10px;
+            white-space: pre-wrap;
+            word-break: break-all;
+            color: var(--text-light);
+            min-height: 200px;
+        }
+
+        .code-block .json-key { color: var(--text-blue); }
+        .code-block .json-string { color: var(--text-green); }
+        .code-block .json-number { color: var(--text-yellow); }
+        .code-block .json-boolean { color: var(--text-blue); }
+        .code-block .json-null { color: var(--text-red); }
+        .code-block .http-status { color: var(--text-yellow); }
+        .code-block .http-method { color: var(--text-green); }
+        .code-block .http-headers { color: var(--text-light); }
+
+    </style>
+</head>
+<body>
+
+    <div class="test-scenarios">
+        <h2>Test Scenarios</h2>
+        <button id="testSetup">1. Setup Accounts (A: $1000, B: $500)</button>
+        <button id="testGet">2. Get All Accounts (Check Balances)</button>
+        <hr style="border-color: var(--border-color); margin: 15px 0;">
+        <div class="account-info">
+             <div>
+                <label for="fromIdInput">From (UserA ID):</label>
+                <input type="text" id="fromIdInput" placeholder="Auto-fills from Setup" readonly>
+            </div>
+            <div>
+                <label for="toIdInput">To (UserB ID):</label>
+                <input type="text" id="toIdInput" placeholder="Auto-fills from Setup" readonly>
+            </div>
+        </div>
+        <button id="testTransferSuccess">3. Transfer $100 (Success: A -> B)</button>
+        <button id="testTransferFail">4. Transfer $5000 (Fail: A -> B)</button>
+    </div>
+
+    <div class="postman-like-container">
+        <div class="header-bar">
+            <select id="methodSelect" class="method-selector">
+                <option value="POST" selected>POST</option>
+                <option value="GET">GET</option>
+            </select>
+            <input type="text" id="urlInput" class="url-input" value="http://localhost:3000/setup-accounts">
+            <button id="sendButton" class="send-button">Send</button>
+        </div>
+
+        <div class="tab-menu">
+            <button id="bodyTab" class="active">Body</button>
+        </div>
+
+        <div class="content-area">
+            <div class="request-panel">
+                <div id="bodyContent" class="tab-content">
+                    <div class="panel-title">Body</div>
+                    <textarea id="requestBodyEditor" class="json-editor"></textarea>
+                </div>
+            </div>
+
+            <div class="response-panel">
+                <div class="panel-title">
+                    Response <span id="responseStatus" class="status"></span>
+                </div>
+                <div id="responseOutput" class="code-block">
+                    Click "Setup Accounts" to begin.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let userA_id = '';
+        let userB_id = '';
+
+        // --- Get all UI elements ---
+        const methodSelect = document.getElementById('methodSelect');
+        const urlInput = document.getElementById('urlInput');
+        const sendButton = document.getElementById('sendButton');
+        const requestBodyEditor = document.getElementById('requestBodyEditor');
+        const fromIdInput = document.getElementById('fromIdInput');
+        const toIdInput = document.getElementById('toIdInput');
+        const responseStatus = document.getElementById('responseStatus');
+        const responseOutput = document.getElementById('responseOutput');
+
+        // Test Buttons
+        const testSetup = document.getElementById('testSetup');
+        const testGet = document.getElementById('testGet');
+        const testTransferSuccess = document.getElementById('testTransferSuccess');
+        const testTransferFail = document.getElementById('testTransferFail');
+
+        // Use relative paths for ByteXL
+        const API_URL = ''; 
+
+        // --- JSON Syntax Highlighting Function ---
+        function syntaxHighlight(json) {
+            if (typeof json != 'string') {
+                json = JSON.stringify(json, undefined, 4);
+            }
+            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+                let cls = 'json-number';
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) {
+                        cls = 'json-key';
+                    } else {
+                        cls = 'json-string';
+                    }
+                } else if (/true|false/.test(match)) {
+                    cls = 'json-boolean';
+                } else if (/null/.test(match)) {
+                    cls = 'json-null';
+                }
+                return '<span class="' + cls + '">' + match + '</span>';
+            });
+        }
+
+        // --- Core Send Request Logic ---
+        async function makeRequest(method, path, body = null) {
+            const url = API_URL + path;
+            urlInput.value = `http://localhost:3000${path}`;
+            methodSelect.value = method;
+
+            let headers = { 'Content-Type': 'application/json' };
+            
+            try {
+                const options = { method, headers };
+                if (body) {
+                    options.body = JSON.stringify(body);
+                    requestBodyEditor.value = JSON.stringify(body, null, 4);
+                } else {
+                    requestBodyEditor.value = '';
+                }
+
+                const res = await fetch(url, options);
+                const data = await res.json();
+                
+                responseStatus.textContent = `Response ${res.status}`;
+                responseStatus.className = `status ${res.ok ? 'success' : 'error'}`;
+
+                let output = `<span class="http-method">HTTP/1.1</span> <span class="http-status">${res.status} ${res.statusText}</span> <span class="http-headers">(headers...)</span><br>`;
+                output += syntaxHighlight(data);
+                responseOutput.innerHTML = output;
+
+                // If Setup was successful, save the IDs
+                if (path === '/setup-accounts' && res.ok && data.accounts && data.accounts.length >= 2) {
+                    userA_id = data.accounts[0]._id;
+                    userB_id = data.accounts[1]._id;
+                    fromIdInput.value = userA_id; 
+                    toIdInput.value = userB_id;
+                }
+
+            } catch (error) {
+                responseOutput.innerHTML = `<span style="color:var(--text-red);">Error:</span><br>${error.message}`;
+                responseStatus.textContent = "Error";
+                responseStatus.className = "status error";
+            }
+        }
+
+        // --- Test Scenario Buttons ---
+
+        // 1. Setup Accounts
+        testSetup.addEventListener('click', () => {
+            makeRequest('POST', '/setup-accounts', {});
+        });
+
+        // 2. Get All Accounts
+        testGet.addEventListener('click', () => {
+            makeRequest('GET', '/accounts');
+        });
+
+        // 3. Transfer $100 (Success)
+        testTransferSuccess.addEventListener('click', () => {
+            if (!userA_id || !userB_id) {
+                alert('Please run "Setup Accounts" first!');
+                return;
+            }
+            const body = {
+                fromAccountId: userA_id,
+                toAccountId: userB_id,
+                amount: 100
+            };
+            makeRequest('POST', '/transfer', body);
+        });
+
+        // 4. Transfer $5000 (Fail)
+        testTransferFail.addEventListener('click', () => {
+             if (!userA_id || !userB_id) {
+                alert('Please run "Setup Accounts" first!');
+                return;
+            }
+             const body = {
+                fromAccountId: userA_id,
+                toAccountId: userB_id,
+                amount: 5000
+            };
+            makeRequest('POST', '/transfer', body);
+        });
+
+        // Set initial state
+        testSetup.click();
+        
+    </script>
+</body>
+</html>
